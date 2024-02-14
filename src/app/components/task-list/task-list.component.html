@@ -1,0 +1,30 @@
+<div class="container mt-4">
+  <h2>Task List</h2>
+  <button class="btn btn-primary my-3" (click)="addTask()">Add New Task</button>
+  <div *ngIf="tasks.length; else noTasks">
+    <ul class="list-group">
+      <li
+        class="list-group-item d-flex justify-content-between align-items-center mb-4 rounded border py-4"
+        [ngClass]="{ 'bg-success border-success text-white': task.status == 'Completed' }"
+        *ngFor="let task of tasks"
+      >
+        <div class="w-75">
+          <h5 class="mb-1">{{ task.title }}</h5>
+          <p class="mb-1">{{ task.description }}</p>
+          <small>Status: {{ task.status }}</small>
+        </div>
+        <div class="w-25 text-end">
+          <button class="btn btn-light me-4" (click)="editTask(task.id)">
+            Edit
+          </button>
+          <button class="btn btn-danger" (click)="deleteTask(task.id)">
+            Delete
+          </button>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <ng-template #noTasks>
+    <p>No tasks found. Add a new task.</p>
+  </ng-template>
+</div>
