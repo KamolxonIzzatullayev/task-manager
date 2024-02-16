@@ -14,7 +14,7 @@ import { fabric } from 'fabric';
 export class TaskDetailComponent implements OnInit, AfterViewInit {
   task: Task = new Task(0, '', '', 'Pending');
   canvas: fabric.Canvas;
-  @ViewChild('htmlCanvas') htmlCanvas: ElementRef;
+  @ViewChild('htmlCanvas') htmlCanvas: ElementRef<HTMLCanvasElement>;
 
   constructor(
     private taskService: TaskService,
@@ -27,14 +27,27 @@ export class TaskDetailComponent implements OnInit, AfterViewInit {
     if (taskId) {
       this.taskService.getTaskById(taskId).subscribe(task => {
         this.task = task;
+
+        if (this.canvas && this.task.fabricData) {
+          const parsedData = JSON.parse(this.task.fabricData);
+          this.canvas.loadFromJSON(parsedData, () => {
+            this.canvas.renderAll();
+          });
+        }
       });
+
     }
   }
 
   ngAfterViewInit(): void {
+    this.canvas = new fabric.Canvas(this.htmlCanvas.nativeElement, {
+      isDrawingMode: true
+    });
   }
 
   saveTask(): void {
+    const canvasData = JSON.stringify(this.canvas.toJSON());
+    this.task.fabricData = canvasData;
     if (this.task.id) {
       this.taskService.updateTask(this.task).subscribe(() => this.goBack());
     } else {
